@@ -48,6 +48,10 @@ with open("import.json", "r") as f:
 		x[0] = x[0].encode("ASCII")
 		x[2] = x[2].encode("ASCII")
 
+funcinfo = {}
+with open("funcinfo.json", "r") as f:
+	funcinfo = json.load(f)
+
 def find_function(importdb, modulename, nr):
 	for x in importdb:
 		if (x[0] == modulename or x[0][:-1] == modulename or x[0][1:] == modulename) and x[1] == nr:
@@ -71,7 +75,7 @@ with open(sys.argv[1], "rb") as f:
 			break
 		magic = int.from_bytes(magic, byteorder="little")
 		if magic == IRX_MAGIC_IMPORT:
-			f.read(4) # unused
+			f.seek(4, 1) # unused
 			version = f.read(4)
 			if len(version) < 4:
 				break
@@ -119,12 +123,13 @@ with open(sys.argv[1], "rb") as f:
 					break
 				addr = int.from_bytes(addr, byteorder="little")
 				if last_was_zero:
-					if addr == IRX_MAGIC_IMPORT_FUNCTION:
+					if addr == IRX_MAGIC_IMPORT_FUNCTION or addr == IRX_MAGIC_IMPORT or addr == IRX_MAGIC_EXPORT:
+						export_iopmod.pop()
+						f.seek(-4, 1)
 						break
 					last_was_zero = False
-				else:
-					if addr == 0:
-						last_was_zero = True
+				if addr == 0:
+					last_was_zero = True
 				export_iopmod.append([modulename, number, find_address(program_headers, offset), find_function(importdb, modulename, number), addr])
 				number += 1
 			export_info.append(export_iopmod)
@@ -162,17 +167,37 @@ with open(sys.argv[1], "rb") as f:
 					funcname = "%s_%d" % (xx[0].decode("ASCII"), xx[1])
 				outfile.write("0x%08x %s\n" % (xx[2], funcname))
 	if mapformat == 2:
+		used_addresses = []
 		outfile.write("#include <idc.idc>\nstatic main(void) {\n")
 		for x in exports:
 			for xx in x[2]:
 				funcname = xx[3].decode("ASCII")
 				if len(funcname) == 0:
 					funcname = "%s_%d" % (xx[0].decode("ASCII"), xx[1])
-				outfile.write("set_name(0x%08x,\"%s\");\n" % (xx[4], funcname))
+				funcaddr = xx[4]
+				if funcaddr not in used_addresses:
+					used_addresses.append(funcaddr)
+					outfile.write("create_insn(0x%08x);\n" % (funcaddr))
+					outfile.write("add_func(0x%08x);\n" % (funcaddr))
+					outfile.write("set_name(0x%08x,\"%s\");\n" % (funcaddr, funcname))
+					if funcname in funcinfo:
+						outfile.write("SetType(0x%08x,\"%s\");\n" % (funcaddr, funcinfo[funcname]))
 		for x in imports:
 			for xx in x[2]:
 				funcname = xx[3].decode("ASCII")
 				if len(funcname) == 0:
 					funcname = "%s_%d" % (xx[0].decode("ASCII"), xx[1])
-				outfile.write("set_name(0x%08x,\"%s\");\n" % (xx[2], funcname))
+				funcaddr = xx[2]
+				if funcaddr not in used_addresses:
+					used_addresses.append(funcaddr)
+					outfile.write("create_insn(0x%08x);\n" % (funcaddr))
+					outfile.write("add_func(0x%08x);\n" % (funcaddr))
+					outfile.write("set_name(0x%08x,\"%s\");\n" % (funcaddr, funcname))
+					if funcname in funcinfo:
+						outfile.write("SetType(0x%08x,\"%s\");\n" % (funcaddr, funcinfo[funcname]))
+		if 0 not in used_addresses:
+			outfile.write("create_insn(0x%08x);\n" % (0))
+			outfile.write("add_func(0x%08x);\n" % (0))
+			outfile.write("set_name(0x%08x,\"%s\");\n" % (0, "irx_entry_point"))
+		outfile.write("qexit(0);\n")
 		outfile.write("}\n")
