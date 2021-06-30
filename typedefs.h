@@ -620,3 +620,20 @@ typedef int (*sio2_mtap_get_slot_max_cb_t)(int port);
 typedef int (*sio2_mtap_get_slot_max2_cb_t)(int port);
 typedef void (*sio2_mtap_update_slots_t)(void);
 
+typedef int (*dev9_intr_cb_t)(int flag);
+typedef void (*dev9_shutdown_cb_t)(void);
+typedef void (*dev9_dma_cb_t)(int bcr, int dir);
+
+typedef struct _ata_devinfo {
+  /** Was successfully probed.  */
+  s32 exists;
+  /** Supports the PACKET command set.  */
+  s32 has_packet;
+  /** Total number of user sectors.  */
+  u32 total_sectors;
+  /** Word 0x100 of the identify info.  */
+  u32 security_status;
+  /** Supports the 48-bit LBA command set (unofficial).  */
+  u32 lba48;
+} ata_devinfo_t;
+
