@@ -883,5 +883,15 @@
  ["xtimrman", 21, "SetOverflowHandler"],
  ["xtimrman", 22, "SetupHardTimer"],
  ["xtimrman", 23, "StartHardTimer"],
- ["xtimrman", 24, "StopHardTimer"]
+ ["xtimrman", 24, "StopHardTimer"],
+["pvrdrv", 4, "DvrdrvResetSystem"],
+["pvrdrv", 5, "DvrdrvEnableIntr"],
+["pvrdrv", 6, "DvrdrvDisableIntr"],
+["pvrdrv", 7, "DvrdrvRegisterIntrHandler"],
+["pvrdrv", 8, "DvrdrvUnregisterIntrHandler"],
+["pvrdrv", 9, "DvrdrvExecCmdAck"],
+["pvrdrv", 10, "DvrdrvExecCmdAckComp"],
+["pvrdrv", 11, "DvrdrvExecCmdAckDmaSendComp"],
+["pvrdrv", 12, "DvrdrvExecCmdAckDmaRecvComp"],
+["pvrdrv", 13, "DvrdrvExecCmdAckDma2Comp"]
 ]

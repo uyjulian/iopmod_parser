@@ -137,7 +137,7 @@ typedef struct _iop_device {
 } iop_device_t;
 
 typedef struct _iop_device_ops {
-#if 1
+#if 0
   int (*init)(iop_device_t *);
   int (*deinit)(iop_device_t *);
   int (*format)(iop_file_t *);
@@ -636,4 +636,37 @@ typedef struct _ata_devinfo {
   /** Supports the 48-bit LBA command set (unofficial).  */
   u32 lba48;
 } ata_devinfo_t;
+
+
+struct __attribute__((aligned(4))) drvdrv_exec_cmd_ack
+{
+  u16 command;
+  u16 input_word[64];
+  u32 input_word_count;
+  u16 field_88;
+  u16 ack_status;
+  u16 output_word[64];
+  u32 field_10C;
+  u8 field_110;
+  u8 field_111;
+  u16 comp_status;
+  u16 return_result_word[64];
+  s32 field_194;
+  u32 timeout;
+  u32 input_buffer;
+  u32 input_buffer_length;
+  u32 output_buffer;
+  s32 field_1A8;
+  s32 phase;
+};
+
+struct __attribute__((packed)) __attribute__((aligned(1))) struct_itr_sid_tbl
+{
+  u16 word0;
+  u8 gap2[2];
+  u32 dword4;
+  u16 word8;
+  u8 byteA;
+  u8 byteB;
+};
 
