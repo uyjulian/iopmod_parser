@@ -179,9 +179,10 @@ with open(sys.argv[1], "rb") as f:
 					used_addresses.append(funcaddr)
 					outfile.write("create_insn(0x%08x);\n" % (funcaddr))
 					outfile.write("add_func(0x%08x);\n" % (funcaddr))
-					outfile.write("set_name(0x%08x,\"%s\");\n" % (funcaddr, funcname))
-					if funcname in funcinfo:
-						outfile.write("SetType(0x%08x,\"%s\");\n" % (funcaddr, funcinfo[funcname]))
+					if funcname != "":
+						outfile.write("set_name(0x%08x,\"%s\");\n" % (funcaddr, funcname))
+						if funcname in funcinfo:
+							outfile.write("SetType(0x%08x,\"%s\");\n" % (funcaddr, funcinfo[funcname]))
 		for x in imports:
 			for xx in x[2]:
 				funcname = xx[3].decode("ASCII")
@@ -192,9 +193,10 @@ with open(sys.argv[1], "rb") as f:
 					used_addresses.append(funcaddr)
 					outfile.write("create_insn(0x%08x);\n" % (funcaddr))
 					outfile.write("add_func(0x%08x);\n" % (funcaddr))
-					outfile.write("set_name(0x%08x,\"%s\");\n" % (funcaddr, funcname))
-					if funcname in funcinfo:
-						outfile.write("SetType(0x%08x,\"%s\");\n" % (funcaddr, funcinfo[funcname]))
+					if funcname != "":
+						outfile.write("set_name(0x%08x,\"%s\");\n" % (funcaddr, funcname))
+						if funcname in funcinfo:
+							outfile.write("SetType(0x%08x,\"%s\");\n" % (funcaddr, funcinfo[funcname]))
 		if 0 not in used_addresses:
 			outfile.write("create_insn(0x%08x);\n" % (0))
 			outfile.write("add_func(0x%08x);\n" % (0))
