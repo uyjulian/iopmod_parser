@@ -377,8 +377,12 @@ typedef struct _iop_mbx_status {
   int reserved[2];
 } iop_mbx_status_t;
 
-typedef void (*exception_handler_t)(void);
-
+typedef struct _exception_handler_struct_t
+{
+  void* next;
+  int info;
+  u32 funccode[];
+} exception_handler_struct_t;
 
 
 typedef struct SecrBitBlockData{
@@ -522,6 +526,23 @@ struct irx_export_table {
 };
 
 
+
+typedef struct _IopModuleID {
+    const char *name;
+    unsigned short int version;
+} IopModuleID_t;
+
+typedef struct _FileInfo {
+  u32 ModuleType;
+  void *EntryPoint;
+  void *gp;
+  void *text_start;
+  u32 text_size;
+  u32 data_size;
+  u32 bss_size;
+  u32 MemSize;
+  IopModuleID_t *mod_id;
+} FileInfo_t;
 
 typedef struct _ModuleInfo {
   struct _ModuleInfo *next;
