@@ -658,3 +658,52 @@ typedef struct _ata_devinfo {
   u32 lba48;
 } ata_devinfo_t;
 
+typedef struct __attribute__((aligned(4))) drvdrv_exec_cmd_ack_
+{
+  u16 command;
+  u16 input_word[64];
+  u32 input_word_count;
+  u16 status_4220_ack;
+  u16 ack_status_ack;
+  u16 output_word[64];
+  u32 status_4228_ack;
+  u16 status_4220_comp;
+  u16 comp_status;
+  u16 return_result_word[64];
+  u32 status_4228_comp;
+  u32 timeout;
+  void *input_buffer;
+  u32 input_buffer_length;
+  void *output_buffer;
+  int ack_status_ack2;
+  int phase;
+} drvdrv_exec_cmd_ack;
+
+typedef struct
+{
+  u16 func;
+  u16 entry;
+  u32 value;
+} sceSdBatch;
+
+typedef struct
+{
+  int     core;
+  int     mode;
+  short   depth_L;
+  short   depth_R;
+  int     delay;
+  int     feedback;
+} sceSdEffectAttr;
+
+typedef int (*sceSdSpu2IntrHandler)(int, void *);
+typedef int (*sceSdTransIntrHandler)(int, void *);
+typedef int (*SdIntrCallback)(void *data);
+
+typedef struct {
+  u32 id;
+  u32 mbits;
+  u32 page_bytes; /* bytes/page */
+  u32 block_pages;  /* pages/block */
+  u32 blocks;
+} flash_info_t;
