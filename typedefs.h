@@ -707,3 +707,130 @@ typedef struct {
   u32 block_pages;  /* pages/block */
   u32 blocks;
 } flash_info_t;
+
+typedef struct _sceMcStDateTime {
+  u8  Resv2;
+  u8  Sec;
+  u8  Min;
+  u8  Hour;
+  u8  Day;
+  u8  Month;
+  u16 Year;
+} sceMcStDateTime;
+
+/* MCMAN public structures */
+typedef struct {      // size = 128
+  int mode;     // 0
+  int length;     // 4
+  s16 linked_block;   // 8
+  char  name[20];     // 10
+  u8  field_1e;     // 30
+  u8  field_1f;     // 31
+  sceMcStDateTime created;  // 32
+  int field_28;     // 40
+  u16 field_2c;     // 44
+  u16 field_2e;     // 46
+  sceMcStDateTime modified; // 48
+  int field_38;     // 56
+  u8  unused2[65];    // 60
+  u8  field_7d;     // 125
+  u8  field_7e;     // 126
+  u8  edc;      // 127
+} McFsEntryPS1;
+
+typedef struct {      // size = 512
+  u16 mode;     // 0
+  u16 unused;     // 2
+  u32 length;     // 4
+  sceMcStDateTime created;  // 8
+  u32 cluster;      // 16
+  u32 dir_entry;      // 20
+  sceMcStDateTime modified; // 24
+  u32 attr;     // 32
+  u32 unused2[7];     // 36
+  char  name[32];     // 64
+  u8  unused3[416];   // 96
+} McFsEntry;
+
+typedef struct _MCCacheEntry {
+  int  cluster;   // 0
+  u8  *cl_data;   // 4
+  u16  mc_slot;   // 8
+  u8   wr_flag;   // 10
+  u8   mc_port;   // 11
+  u8   rd_flag;   // 12
+  u8   unused[3]; // 13
+} McCacheEntry;
+
+/** file descriptor related mc command
+ * used by: McInit, McClose, McSeek, McRead, McWrite, McGetinfo, McFormat, McFlush, McUnformat
+ */
+typedef struct {  // size = 48
+  int fd;   // 0
+  int port; // 4
+  int slot; // 8
+  int size; // 12
+  int offset; // 16
+  int origin; // 20
+  void *buffer; // 24
+  void *param;  // 28
+  u8 data[16];  // 32
+} mcDescParam_t;
+
+/** endParamenter struct
+ * used by: McRead, McGetInfo, McReadPage
+ */
+typedef struct {    // size = 64
+  union {
+    s32 size1;  // 0
+    s32 type;
+  };
+  union {
+    s32 size2;  // 4
+    s32 free;
+  };
+  void  *dest1;   // 8
+  void  *dest2;   // 12
+  u8  src1[16]; // 16
+  u8  src2[16]; // 32
+  u8  unused[16]; // 48
+} mcEndParam_t;
+
+/** endParamenter2 struct
+ * used by: McRead2, McGetInfo2
+ */
+typedef struct {      // size = 192
+  union {
+    s32 size1;    // 0
+    s32 type;
+  };
+  union {
+    s32 size2;    // 4
+    s32 free;
+  };
+  void  *dest1;     // 8
+  void  *dest2;     // 12
+  u8  src1[64];   // 16
+  u8  src2[64];   // 80
+  union {
+    s32 formatted;  // 144
+    u8  unused[48];
+  };
+} mcEndParam2_t;
+
+typedef struct {
+  s32 result;
+  u32 mcserv_version;
+  u32 mcman_version;
+} mcRpcStat_t;
+
+typedef struct _sceMcTblGetDir {  // size = 64
+  sceMcStDateTime _Create;  // 0
+  sceMcStDateTime _Modify;  // 8
+  u32 FileSizeByte;   // 16
+  u16 AttrFile;     // 20
+  u16 Reserve1;     // 22
+  u32 Reserve2;     // 24
+  u32 PdaAplNo;     // 28
+  unsigned char EntryName[32];  // 32
+} sceMcTblGetDir;
