@@ -1,5 +1,8 @@
 
 import sys
+import os
+
+file_containing_dir = os.path.dirname(os.path.realpath(__file__)) + "/"
 
 class Elf32_Ehdr:
 	def __init__(self, g):
@@ -42,14 +45,14 @@ def find_address(program_headers, addr):
 
 import json
 importdb = []
-with open("import.json", "r") as f:
+with open(file_containing_dir + "import.json", "r") as f:
 	importdb = json.load(f)
 	for x in importdb:
 		x[0] = x[0].encode("ASCII")
 		x[2] = x[2].encode("ASCII")
 
 funcinfo = {}
-with open("funcinfo.json", "r") as f:
+with open(file_containing_dir + "funcinfo.json", "r") as f:
 	funcinfo = json.load(f)
 
 def find_function(importdb, modulename, nr):
