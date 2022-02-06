@@ -834,3 +834,197 @@ typedef struct _sceMcTblGetDir {  // size = 64
   u32 PdaAplNo;     // 28
   unsigned char EntryName[32];  // 32
 } sceMcTblGetDir;
+
+// Arcade stuff!
+enum ac_errno { AC_EOK, AC_EPERM, AC_ENOENT, AC_ESRCH, AC_EINTR, AC_EIO, AC_ENXIO, AC_E2BIG, AC_ENOEXEC, AC_EBADF, AC_ECHILD, AC_EAGAIN, AC_ENOMEM, AC_EACCES, AC_EFAULT, AC_ENOTBLK, AC_EBUSY, AC_EEXIST, AC_EXDEV, AC_ENODEV, AC_ENOTDIR, AC_EISDIR, AC_EINVAL, AC_ENFILE, AC_EMFILE, AC_ENOTTY, AC_ETXTBSY, AC_EFBIG, AC_ENOSPC, AC_ESPIPE, AC_EROFS, AC_EMLINK, AC_EPIPE, AC_EDOM, AC_ERANGE, AC_ENOMSG, AC_EIDRM, AC_ECHRNG, AC_EL2NSYNC, AC_EL3HLT, AC_EL3RST, AC_ELNRNG, AC_EUNATCH, AC_ENOCSI, AC_EL2HLT, AC_EDEADLK, AC_ENOLCK, AC_EBADE = 50, AC_EBADR, AC_EXFULL, AC_ENOANO, AC_EBADRQC, AC_EBADSLT, AC_EDEADLOCK, AC_EBFONT, AC_ENOSTR = 60, AC_ENODATA, AC_ETIME, AC_ENOSR, AC_ENONET, AC_ENOPKG, AC_EREMOTE, AC_ENOLINK, AC_EADV, AC_ESRMNT, AC_ECOMM, AC_EPROTO, AC_EMULTIHOP = 74, AC_ELBIN, AC_EDOTDOT, AC_EBADMSG, AC_ENOTUNIQ = 80, AC_EBADFD, AC_EREMCHG, AC_ELIBACC, AC_ELIBBAD, AC_ELIBSCN, AC_ELIBMAX, AC_ELIBEXEC, AC_ENOSYS, AC_ENMFILE, AC_ENOTEMPTY, AC_ENAMETOOLONG, AC_ELOOP, AC_EOPNOTSUPP = 95, AC_EPFNOSUPPORT, AC_ECONNRESET = 104, AC_ENOBUFS, AC_EAFNOSUPPORT, AC_EPROTOTYPE, AC_ENOTSOCK, AC_ENOPROTOOPT, AC_ESHUTDOWN, AC_ECONNREFUSED, AC_EADDRINUSE, AC_ECONNABORTED, AC_ENETUNREACH, AC_ENETDOWN, AC_ETIMEDOUT, AC_EHOSTDOWN, AC_EHOSTUNREACH, AC_EINPROGRESS, AC_EALREADY, AC_EDESTADDRREQ, AC_EMSGSIZE, AC_EPROTONOSUPPORT, AC_ESOCKTNOSUPPORT, AC_EADDRNOTAVAIL, AC_ENETRESET, AC_EISCONN, AC_ENOTCONN, AC_ETOOMANYREFS, AC_EPROCLIM, AC_EUSERS, AC_EDQUOT, AC_ESTALE, AC_ENOTSUP, AC_ENOMEDIUM, AC_ELAST = 255 };
+typedef signed char acInt8;
+typedef unsigned char acUint8;
+typedef short int acInt16;
+typedef short unsigned int acUint16;
+typedef int acInt32;
+typedef unsigned int acUint32;
+typedef long long int acInt64;
+typedef long long unsigned int acUint64;
+
+typedef struct ac_queue /* id 23 */ acQueueData;
+typedef acQueueData acQueueHeadData;
+typedef acQueueData acQueueChainData;
+typedef acQueueData *acQueueT;
+struct ac_queue { /* size 8 id 23 */
+  acQueueT q_prev; /* bitsize 32, bitpos 0 */
+  acQueueT q_next; /* bitsize 32, bitpos 32 */
+};
+
+typedef acUint16 acAtaCommandData;
+
+typedef struct ac_ata_ops /* id 24 */ *acAtaOpsT;
+
+struct ac_ata_ops { /* size 12 id 24 */
+  int (*ao_command) (/* unknown */); /* bitsize 32, bitpos 0 */
+  void (*ao_done) (/* unknown */); /* bitsize 32, bitpos 32 */
+  int (*ao_error) (/* unknown */); /* bitsize 32, bitpos 64 */
+};
+
+
+
+struct ac_ata_h { /* size 32 id 25 */
+  acQueueChainData a_chain; /* bitsize 64, bitpos 0 */
+  acAtaOpsT a_ops; /* bitsize 32, bitpos 64 */
+  void *a_arg; /* bitsize 32, bitpos 96 */
+  void *a_buf; /* bitsize 32, bitpos 128 */
+  acUint32 a_size; /* bitsize 32, bitpos 160 */
+  acUint32 a_tmout; /* bitsize 32, bitpos 192 */
+  acUint16 a_state; /* bitsize 16, bitpos 224 */
+  acUint16 a_flag; /* bitsize 16, bitpos 240 */
+};
+
+typedef void (*acAtaDone) (/* unknown */);
+
+struct ac_ata { /* size 48 id 26 */
+  struct ac_ata_h /* id 25 */ ac_h; /* bitsize 256, bitpos 0 */
+  acAtaDone ac_done; /* bitsize 32, bitpos 256 */
+  acAtaCommandData ac_command[6]; /* bitsize 96, bitpos 288 */
+};
+
+typedef struct ac_ata /* id 26 */ acAtaData;
+
+typedef acUint16 *acAtaReg;
+
+typedef acAtaData *acAtaT;
+
+typedef struct ac_atapi /* id 32 */ acAtapiData;
+typedef acAtapiData *acAtapiT;
+
+typedef void (*acAtapiDone) (/* unknown */);
+
+union ac_atapi_pkt { /* size 12 id 31 */
+  acUint8 u_b[12]; /* bitsize 96, bitpos 0 */
+  acUint16 u_h[6]; /* bitsize 96, bitpos 0 */
+  acUint32 u_w[3]; /* bitsize 96, bitpos 0 */
+};
+
+typedef union ac_atapi_pkt /* id 31 */ acAtapiPacketData;
+
+
+struct ac_atapi { /* size 48 id 32 */
+  struct ac_ata_h /* id 25 */ ap_h; /* bitsize 256, bitpos 0 */
+  acAtapiDone ap_done; /* bitsize 32, bitpos 256 */
+  acAtapiPacketData ap_packet; /* bitsize 96, bitpos 288 */
+};
+
+typedef struct ac_dma /* id 29 */ acDmaData;
+typedef acDmaData *acDmaT;
+
+struct ac_dma_ops { /* size 12 id 30 */
+  int (*do_xfer) (/* unknown */); /* bitsize 32, bitpos 0 */
+  void (*do_done) (/* unknown */); /* bitsize 32, bitpos 32 */
+  void (*do_error) (/* unknown */); /* bitsize 32, bitpos 64 */
+};
+
+typedef struct ac_dma_ops /* id 30 */ acDmaOpsData;
+typedef acDmaOpsData *acDmaOpsT;
+
+struct ac_dma { /* size 16 id 29 */
+  acQueueChainData d_chain; /* bitsize 64, bitpos 0 */
+  acDmaOpsT d_ops; /* bitsize 32, bitpos 64 */
+  acUint16 d_slice; /* bitsize 16, bitpos 96 */
+  acUint8 d_attr; /* bitsize 8, bitpos 112 */
+  acUint8 d_state; /* bitsize 8, bitpos 120 */
+};
+
+typedef acUint32 acFlashAddr;
+struct ac_flash_info { /* size 8 id 20 */
+  acUint32 fi_blocks; /* bitsize 32, bitpos 0 */
+  acUint32 fi_bsize; /* bitsize 32, bitpos 32 */
+};
+typedef struct ac_flash_info /* id 20 */ acFlashInfoData;
+typedef acFlashInfoData *acFlashInfoT;
+enum ac_intr_num { AC_INTR_NUM_ATA, AC_INTR_NUM_JV, AC_INTR_NUM_UART, AC_INTR_NUM_LAST = 2 };
+typedef enum ac_intr_num acIntrNum;
+
+typedef acUint32 acJvAddr;
+
+struct ac_mem { /* size 16 id 20 */
+  void *m_buf; /* bitsize 32, bitpos 0 */
+  acUint32 m_size; /* bitsize 32, bitpos 32 */
+  acUint32 m_id; /* bitsize 32, bitpos 64 */
+  acUint32 m_attr; /* bitsize 32, bitpos 96 */
+};
+typedef struct ac_mem /* id 20 */ acMemData;
+typedef acMemData *acMemT;
+
+typedef acUint32 acMemEEaddr;
+
+typedef acUint32 acRamAddr;
+typedef struct ac_ram /* id 21 */ acRamData;
+typedef acRamData *acRamT;
+
+typedef void (*acRamDone) (/* unknown */);
+struct ac_ram { /* size 32 id 21 */
+  acQueueChainData r_chain; /* bitsize 64, bitpos 0 */
+  acRamDone r_done; /* bitsize 32, bitpos 64 */
+  void *r_arg; /* bitsize 32, bitpos 96 */
+  void *r_buf; /* bitsize 32, bitpos 128 */
+  acUint32 r_count; /* bitsize 32, bitpos 160 */
+  acRamAddr r_addr; /* bitsize 32, bitpos 192 */
+  acInt32 r_tmout; /* bitsize 32, bitpos 224 */
+};
+
+typedef acUint32 acSramAddr;
+
+typedef acUint64 acTime;
+typedef struct ac_timer /* id 21 */ acTimerData;
+typedef acTimerData *acTimerT;
+typedef void (*acTimerDone) (/* unknown */);
+struct ac_timer { /* size 24 id 21 */
+  acQueueChainData t_chain; /* bitsize 64, bitpos 0 */
+  acTime t_deadline; /* bitsize 64, bitpos 64 */
+  acTimerDone t_done; /* bitsize 32, bitpos 128 */
+  void *t_arg; /* bitsize 32, bitpos 160 */
+};
+
+struct ac_uart_attr { /* size 16 id 21 */
+  acInt32 ua_speed; /* bitsize 32, bitpos 0 */
+  acInt32 ua_fifo; /* bitsize 32, bitpos 32 */
+  acInt32 ua_loopback; /* bitsize 32, bitpos 64 */
+  acInt32 ua_padding; /* bitsize 32, bitpos 96 */
+};
+typedef struct ac_uart_attr /* id 21 */ acUartAttrData;
+typedef acUartAttrData *acUartAttrT;
+
+enum ac_uart_flag { AC_UART_FLAG_READ = 1, AC_UART_FLAG_WRITE, AC_UART_FLAG_BOTH };
+typedef enum ac_uart_flag acUartFlag;
+
+typedef void (*cdc_done_t) (/* unknown */);
+typedef int (*cdc_xfer_t) (/* unknown */);
+enum cdc_xfer_dir { CDC_XFER_SYNC, CDC_XFER_IN, CDC_XFER_OUT };
+
+typedef unsigned char u_char;
+typedef short unsigned int u_short;
+typedef unsigned int u_int;
+typedef long unsigned int u_long;
+
+typedef struct sceCdRMode_ { /* size 4 */
+  u_char trycount; /* bitsize 8, bitpos 0 */
+  u_char spindlctrl; /* bitsize 8, bitpos 8 */
+  u_char datapattern; /* bitsize 8, bitpos 16 */
+  u_char pad; /* bitsize 8, bitpos 24 */
+} sceCdRMode;
+
+typedef struct sceCdlFILE_ { /* size 32 */
+  u_int lsn; /* bitsize 32, bitpos 0 */
+  u_int size; /* bitsize 32, bitpos 32 */
+  char name[16]; /* bitsize 128, bitpos 64 */
+  u_char date[8]; /* bitsize 64, bitpos 192 */
+} sceCdlFILE;
+
+
+
+
+
+
+
+
+
+
+
