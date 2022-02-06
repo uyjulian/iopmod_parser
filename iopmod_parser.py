@@ -139,6 +139,8 @@ with open(sys.argv[1], "rb") as f:
 			exports.append(export_info)
 	outfile = sys.stdout
 	mapformat = 0
+	if len(sys.argv) > 2:
+		mapformat = int(sys.argv[2])
 	if mapformat == 0:
 		for x in exports:
 			outfile.write("\nmodule %s %d.%d exported functions:\n" % (x[1].decode("ASCII"), (x[0] >> 8) & 0xff, x[0] & 0xff))
@@ -200,9 +202,5 @@ with open(sys.argv[1], "rb") as f:
 						outfile.write("set_name(0x%08x,\"%s\");\n" % (funcaddr, funcname))
 						if funcname in funcinfo:
 							outfile.write("SetType(0x%08x,\"%s\");\n" % (funcaddr, funcinfo[funcname]))
-		if 0 not in used_addresses:
-			outfile.write("create_insn(0x%08x);\n" % (0))
-			outfile.write("add_func(0x%08x);\n" % (0))
-			outfile.write("set_name(0x%08x,\"%s\");\n" % (0, "irx_entry_point"))
 		outfile.write("qexit(0);\n")
 		outfile.write("}\n")
