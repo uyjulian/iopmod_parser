@@ -639,6 +639,10 @@
 	"vfdprintf" : "int vfdprintf(int fd, const char *format, va_list ap);",
 	"vsprintf" : "int vsprintf(char *buf, const char *fmt, va_list ap);",
 
+	"SetAcMemDelayReg" : "int SetAcMemDelayReg(unsigned int value);",
+	"GetAcMemDelayReg" : "int GetAcMemDelayReg(void);",
+	"SetAcIoDelayReg" : "int SetAcIoDelayReg(unsigned int value);",
+	"GetAcIoDelayReg" : "int GetAcIoDelayReg(void);",
 	"acAtaModuleRestart" : "int acAtaModuleRestart (int argc, char **argv);",
 	"acAtaModuleStart" : "int acAtaModuleStart (int argc, char **argv);",
 	"acAtaModuleStatus" : "int acAtaModuleStatus (void);",
