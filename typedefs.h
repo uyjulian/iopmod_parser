@@ -1004,20 +1004,6 @@ typedef short unsigned int u_short;
 typedef unsigned int u_int;
 typedef long unsigned int u_long;
 
-typedef struct sceCdRMode_ { /* size 4 */
-  u_char trycount; /* bitsize 8, bitpos 0 */
-  u_char spindlctrl; /* bitsize 8, bitpos 8 */
-  u_char datapattern; /* bitsize 8, bitpos 16 */
-  u_char pad; /* bitsize 8, bitpos 24 */
-} sceCdRMode;
-
-typedef struct sceCdlFILE_ { /* size 32 */
-  u_int lsn; /* bitsize 32, bitpos 0 */
-  u_int size; /* bitsize 32, bitpos 32 */
-  char name[16]; /* bitsize 128, bitpos 64 */
-  u_char date[8]; /* bitsize 64, bitpos 192 */
-} sceCdlFILE;
-
 
 
 
