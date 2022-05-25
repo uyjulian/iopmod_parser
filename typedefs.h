@@ -384,6 +384,7 @@ typedef struct _exception_handler_struct_t
   u32 funccode[];
 } exception_handler_struct_t;
 
+typedef exception_handler_struct_t* exception_handler_t;
 
 typedef struct SecrBitBlockData{
   
