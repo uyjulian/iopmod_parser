@@ -835,3 +835,478 @@ typedef struct _sceMcTblGetDir {  // size = 64
   u32 PdaAplNo;     // 28
   unsigned char EntryName[32];  // 32
 } sceMcTblGetDir;
+
+// Audio related definitions start here
+
+typedef struct {
+  int   sema;
+  void  *buff;
+} sceCslBuffCtx;
+
+typedef struct {
+  int    system[48];
+} sceCslIdMonitor;
+
+
+typedef struct {
+  int       buffNum;
+  sceCslBuffCtx *buffCtx;
+} sceCslBuffGrp;
+
+typedef struct {
+  int     buffGrpNum;
+  sceCslBuffGrp*    buffGrp;
+  void*     conf;
+  void*     callBack;
+  char**      extmod;
+} sceCslCtx;
+
+typedef struct {
+  int   core;
+#define SCEHS_REV_MODE_OFF    0
+#define SCEHS_REV_MODE_ROOM   1
+#define SCEHS_REV_MODE_STUDIO_A 2
+#define SCEHS_REV_MODE_STUDIO_B 3
+#define SCEHS_REV_MODE_STUDIO_C 4
+#define SCEHS_REV_MODE_HALL   5
+#define SCEHS_REV_MODE_SPACE  6
+#define SCEHS_REV_MODE_ECHO   7
+#define SCEHS_REV_MODE_DELAY  8
+#define SCEHS_REV_MODE_PIPE   9
+#define SCEHS_REV_MODE_MAX    10
+#define SCEHS_REV_MODE_CLEAR_WA (1<<8)
+  int   mode;
+  short depth_L, depth_R;
+  int   delay;
+  int   feedback;
+  short vol_l, vol_r;
+} sceHSyn_EffectAttr;
+
+#define sceHSyn_NumCore 2
+#define sceHSyn_NumVoice 24
+
+typedef struct {
+  int pendingVoiceCount;
+  int workVoiceCount;
+  unsigned char voice_state[sceHSyn_NumCore][sceHSyn_NumVoice];
+  unsigned short  voice_env[sceHSyn_NumCore][sceHSyn_NumVoice];
+} sceHSyn_VoiceStat;
+
+typedef struct {
+  unsigned int  func;
+  unsigned int  retVal;
+  unsigned int  arg[5];
+} sceHSyn_SdCall;
+typedef struct {
+  unsigned int  infoBlkNum;
+  unsigned int  readIndex;
+  unsigned int  writeIndex;
+  sceHSyn_SdCall  sdCall[0];
+} sceHSyn_DebugInfo;
+
+typedef struct {
+#define sceHSynChStat_KeyOn   (1<<0)
+#define sceHSynChStat_Hold    (1<<1)
+#define sceHSynChStat_KeyOff  (1<<2)
+  unsigned char ch[16];
+} sceHSynChStat;
+
+typedef struct {
+  unsigned char d[7];
+} sceMSInHsMsg;
+
+typedef struct {
+  unsigned short sampleSetIndex;
+
+  unsigned char  splitRangeLow;
+  unsigned char  splitCrossFade;
+  unsigned char  splitRangeHigh;
+  unsigned char  splitNumber;
+
+  unsigned short splitBendRangeLow;
+  unsigned short splitBendRangeHigh;
+
+  char     keyFollowPitch;
+  unsigned char  keyFollowPitchCenter;
+  char     keyFollowAmp;
+  unsigned char  keyFollowAmpCenter;
+  char     keyFollowPan;
+  unsigned char  keyFollowPanCenter;
+
+  unsigned char  splitVolume;
+  char     splitPanpot;
+  char     splitTranspose;
+  char     splitDetune;
+} sceHardSynthSplitBlock;
+
+
+typedef struct {
+  unsigned int   splitBlockAddr;
+
+  unsigned char  nSplit;
+  unsigned char  sizeSplitBlock;
+
+  unsigned char  progVolume;
+  char     progPanpot;
+  char     progTranspose;
+  char     progDetune;
+  char     keyFollowPan;
+  unsigned char  keyFollowPanCenter;
+  unsigned char  progAttr;
+  unsigned char  dmy;
+
+  unsigned char  progLfoWave;
+  unsigned char  progLfoWave2;
+  unsigned char  progLfoStartPhase;
+  unsigned char  progLfoStartPhase2;
+  unsigned char  progLfoPhaseRandom;
+  unsigned char  progLfoPhaseRandom2;
+  unsigned short progLfoFreq;
+  unsigned short progLfoFreq2;
+  short    progLfoPitchDepth;
+  short    progLfoPitchDepth2;
+  short    progLfoMidiPitchDepth;
+  short    progLfoMidiPitchDepth2;
+  char     progLfoAmpDepth;
+  char     progLfoAmpDepth2;
+  char     progLfoMidiAmpDepth;
+  char     progLfoMidiAmpDepth2;
+
+  sceHardSynthSplitBlock splitBlock[0];
+} sceHardSynthProgramParam;
+
+
+typedef struct{
+  unsigned int   volume;
+  int            panpot;
+  int            transpose;
+  int            detune;
+} SceSdHdProgramCommon;
+
+typedef struct{
+  int            pan;
+  unsigned int   panCenter;
+} SceSdHdProgramKeyFollow;
+
+
+typedef struct{
+  unsigned int   wavePitch;
+  unsigned int   waveAmp;
+  unsigned int   startPhasePitch;
+  unsigned int   startPhaseAmp;
+  unsigned int   phaseRandomPitch;
+  unsigned int   phaseRandomAmp;
+  unsigned int   cyclePitch;
+  unsigned int   cycleAmp;
+  int            pitchDepthUp;
+  int            pitchDepthDown;
+  int            midiPitchDepthUp;
+  int            midiPitchDepthDown;
+  int            ampDepthUp;
+  int            ampDepthDown;
+  int            midiAmpDepthUp;
+  int            midiAmpDepthDown;
+} SceSdHdProgramLFO;
+
+typedef struct{
+  unsigned int              nSplit;
+  unsigned int              progAttr;
+  SceSdHdProgramCommon      common;
+  SceSdHdProgramKeyFollow   keyFollow;
+  SceSdHdProgramLFO         LFO;
+} SceSdHdProgramParam;
+
+typedef struct {
+  unsigned char  velCurve;
+  unsigned char  velLimitLow;
+  unsigned char  velLimitHigh;
+  unsigned char  nSample;
+
+  unsigned short sampleIndex[0];
+} sceHardSynthSampleSetParam;
+
+typedef struct{
+  unsigned int   velCurve;
+  unsigned int   velLimitLow;
+  unsigned int   velLimitHigh;
+  unsigned int   nSample;
+} SceSdHdSampleSetParam;
+
+typedef struct {
+  unsigned short VagIndex;
+
+  unsigned char  velRangeLow;
+  unsigned char  velCrossFade;
+  unsigned char  velRangeHigh;
+
+  char     velFollowPitch;
+  unsigned char  velFollowPitchCenter;
+  unsigned char  velFollowPitchVelCurve;
+
+  char     velFollowAmp;
+  unsigned char  velFollowAmpCenter;
+  unsigned char  velFollowAmpVelCurve;
+
+  unsigned char  sampleBaseNote;
+  char     sampleDetune;
+  char     samplePanpot;
+  unsigned char  sampleGroup;
+  unsigned char  samplePriority;
+  unsigned char  sampleVolume;
+  unsigned char  dmy;
+
+  unsigned short sampleAdsr1;
+  unsigned short sampleAdsr2;
+
+  char     keyFollowAr;
+  unsigned char  keyFollowArCenter;
+  char     keyFollowDr;
+  unsigned char  keyFollowDrCenter;
+  char     keyFollowSr;
+  unsigned char  keyFollowSrCenter;
+  char     keyFollowRr;
+  unsigned char  keyFollowRrCenter;
+  char     keyFollowSl;
+  unsigned char  keyFollowSlCenter;
+
+  unsigned short samplePitchLfoDelay;
+  unsigned short samplePitchLfoFade;
+  unsigned short sampleAmpLfoDelay;
+  unsigned short sampleAmpLfoFade;
+
+  unsigned char  sampleLfoAttr;
+  unsigned char  sampleSpuAttr;
+} sceHardSynthSampleParam;
+
+typedef struct{
+  unsigned int    low;
+  unsigned int    crossFade;
+  unsigned int    high;
+} SceSdHdSampleVelRange;
+
+typedef struct{
+  int             pitch;
+  unsigned int    pitchCenter;
+  unsigned int    pitchVelCurve;
+  int             amp;
+  unsigned int    ampCenter;
+  unsigned int    ampVelCurve;
+} SceSdHdSampleVelFollow;
+
+typedef struct{
+  unsigned int    baseNote;
+  int             detune;
+  int             panpot;
+  unsigned int    group;
+  unsigned int    priority;
+  unsigned int    volume;
+} SceSdHdSampleCommon;
+
+typedef struct{
+  unsigned int   ADSR1;
+  unsigned int   ADSR2;
+} SceSdHdSampleADSR;
+
+typedef struct{
+  int             ar;
+  unsigned int    arCenter;
+  int             dr;
+  unsigned int    drCenter;
+  int             sr;
+  unsigned int    srCenter;
+  int             rr;
+  unsigned int    rrCenter;
+  int             sl;
+  unsigned int    slCenter;
+} SceSdHdSampleKeyFollow;
+
+typedef struct{
+  unsigned int   pitchLFODelay;
+  unsigned int   pitchLFOFade;
+  unsigned int   ampLFODelay;
+  unsigned int   ampLFOFade;
+} SceSdHdSampleLFO;
+
+typedef struct{
+  int                      vagIndex;
+  unsigned int             spuAttr;
+  unsigned int             lfoAttr;
+  SceSdHdSampleVelRange    velRange;
+  SceSdHdSampleVelFollow   velFollow;
+  SceSdHdSampleCommon      common;
+  SceSdHdSampleADSR        ADSR;
+  SceSdHdSampleKeyFollow   keyFollow;
+  SceSdHdSampleLFO         LFO;
+} SceSdHdSampleParam;
+
+typedef struct {
+  unsigned int   vagOffsetAddr;
+  unsigned short vagSampleRate;
+  unsigned char  vagAttribute;
+  unsigned char  dmy;
+} sceHardSynthVagParam;
+
+typedef struct{
+  unsigned int   vagOffsetAddr;
+  unsigned int   vagSize;
+  unsigned int   vagSampleRate;
+  unsigned int   vagAttribute;
+} SceSdHdVAGInfoParam;
+
+typedef struct{
+  unsigned int    low;
+  unsigned int    crossFade;
+  unsigned int    high;
+} SceSdHdSplitRange;
+
+typedef struct{
+  unsigned int   low;
+  unsigned int   high;
+} SceSdHdSplitBendRange;
+
+typedef struct{
+  int             pitch;
+  unsigned int    pitchCenter;
+  int             amp;
+  unsigned int    ampCenter;
+  int             pan;
+  unsigned int    panCenter;
+} SceSdHdSplitKeyFollow;
+
+typedef struct{
+  unsigned int    volume;
+  int             panpot;
+  int             transpose;
+  int             detune;
+} SceSdHdSplitCommon;
+
+typedef struct{
+  unsigned int            sampleSetIndex;
+  unsigned int            splitNumber;
+  SceSdHdSplitRange       range;
+  SceSdHdSplitBendRange   bendRange;
+  SceSdHdSplitKeyFollow   keyFollow;
+  SceSdHdSplitCommon      common;
+} SceSdHdSplitBlock;
+
+typedef struct  {
+  unsigned short compOption;
+  unsigned short compTableSize;
+  unsigned char  compTable[0];
+} sceSeqMidiCompBlock;
+
+typedef struct  {
+  unsigned int   sequenceDataOffset;
+  unsigned short Division;
+  sceSeqMidiCompBlock compBlock[0]; /* compression data block:
+             [NOTICE: sceSeqMidiDataBlock may have
+            no compression data block] */
+} sceSeqMidiDataBlock;
+
+#define SCESDSQ_MAXMIDIMESSAGELENGTH       8
+#define SCESDSQ_MAXORIGINALMESSAGELENGTH   12
+#define SCESDSQ_MAXSONGMESSAGELENGTH       3
+
+typedef struct{
+  unsigned int                 readStatus;
+  unsigned int                 midiNumber;
+  sceSeqMidiDataBlock   *midiData;
+  unsigned int                 offset;
+  unsigned int                 nextOffset;
+  unsigned int                 division;
+  unsigned int                 compMode;
+  unsigned int                 compTableSize;
+  unsigned int                 deltaTime;
+  unsigned char                lastStatus;
+  unsigned char                reserve[3];
+  unsigned int                 messageLength;
+  unsigned char                message[SCESDSQ_MAXMIDIMESSAGELENGTH];
+  unsigned int                 originalMessageLength;
+  unsigned char                originalMessage[SCESDSQ_MAXORIGINALMESSAGELENGTH];
+} SceSdSqMidiData;
+
+typedef struct{
+  unsigned int    readStatus;
+  unsigned int    songNumber;
+  void     *topAddr;
+  unsigned int    offset;
+  unsigned int    nextOffset;
+  unsigned char   message[SCESDSQ_MAXSONGMESSAGELENGTH];
+  unsigned char   reserve;
+} SceSdSqSongData;
+
+typedef struct{
+  unsigned char   status;
+  unsigned char   data;
+} SceSdSqCompTableData, SceSdSqPolyKeyData;
+
+typedef struct{
+  unsigned char   status;
+  unsigned char   note;
+  unsigned char   velocity;
+  unsigned char   reserve;
+} SceSdSqCompTableNoteOnEvent;
+
+
+typedef struct {
+  short *src;
+  short *dest;
+  short *work;
+  int    size;
+  int    loop_start;
+  int    loop;
+  int    byte_swap;
+  int    proceed;
+  int    quality;
+} sceSpuEncodeEnv;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
