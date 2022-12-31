@@ -204,3 +204,24 @@ with open(sys.argv[1], "rb") as f:
 							outfile.write("SetType(0x%08x,\"%s\");\n" % (funcaddr, funcinfo[funcname]))
 		outfile.write("qexit(0);\n")
 		outfile.write("}\n")
+	if mapformat == 3:
+		for x in exports:
+			outfile.write("\nDECLARE_EXPORT_TABLE(%s, %d, %d)\n" % (x[1].decode("ASCII"), (x[0] >> 8) & 0xff, x[0] & 0xff))
+			for xx in x[2]:
+				funcname = xx[3].decode("ASCII")
+				if len(funcname) == 0:
+					outfile.write("/* 0x%08x %d at 0x%08x */\n" % (xx[2], xx[1], xx[4]))
+				else:
+					outfile.write("DECLARE_EXPORT(%s) /* 0x%08x %d at 0x%08x */\n" % (funcname, xx[2], xx[1], xx[4]))
+			outfile.write("END_EXPORT_TABLE\n")
+		for x in imports:
+			outfile.write("\n%s_IMPORTS_start\n" % (x[1].decode("ASCII")))
+			for xx in x[2]:
+				funcname = xx[3].decode("ASCII")
+				if len(funcname) == 0:
+					outfile.write("/* 0x%08x %d */\n" % (xx[2], xx[1]))
+				else:
+					outfile.write("I_%s\n" % (funcname))
+			outfile.write("%s_IMPORTS_end\n" % (x[1].decode("ASCII")))
+		for x in imports:
+			outfile.write("#include <%s.h>\n" % (x[1].decode("ASCII")))
