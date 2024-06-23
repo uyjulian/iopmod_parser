@@ -274,7 +274,9 @@ if True:
 		outfile.write("}\n")
 	if mapformat == 3:
 		if iopmod_version[0] != None:
+			outfile.write("\n// --- iopmod version ---\n")
 			outfile.write("\nIRX_ID(\"%s\", %d, %d);\n" % (iopmod_name.decode("ASCII"), iopmod_version[0], iopmod_version[1]))
+		outfile.write("\n// --- export table ---\n")
 		for x in exports:
 			outfile.write("\nDECLARE_EXPORT_TABLE(%s, %d, %d)\n" % (x[1].decode("ASCII"), (x[0] >> 8) & 0xff, x[0] & 0xff))
 			for xx in x[2]:
@@ -284,6 +286,17 @@ if True:
 				else:
 					outfile.write("DECLARE_EXPORT(%s) /* 0x%08x %d at 0x%08x */\n" % (funcname, xx[2], xx[1], xx[4]))
 			outfile.write("END_EXPORT_TABLE\n")
+		outfile.write("\n// --- export table for include ---\n")
+		for x in exports:
+			outfile.write("#define %s_IMPORTS_start DECLARE_IMPORT_TABLE(%s, %d, %d)\n" % (x[1].decode("ASCII"), x[1].decode("ASCII"), (x[0] >> 8) & 0xff, x[0] & 0xff))
+			outfile.write("#define %s_IMPORTS_end END_IMPORT_TABLE\n\n" % (x[1].decode("ASCII")))
+			for xx in x[2]:
+				funcname = xx[3].decode("ASCII")
+				if len(funcname) == 0:
+					outfile.write("/* 0x%08x %d at 0x%08x */\n" % (xx[2], xx[1], xx[4]))
+				else:
+					outfile.write("#define I_%s DECLARE_IMPORT(%d, %s)\n" % (funcname, xx[1], funcname))
+		outfile.write("\n// --- import table ---\n")
 		for x in imports:
 			outfile.write("\n%s_IMPORTS_start\n" % (x[1].decode("ASCII")))
 			for xx in x[2]:
@@ -293,5 +306,6 @@ if True:
 				else:
 					outfile.write("I_%s\n" % (funcname))
 			outfile.write("%s_IMPORTS_end\n" % (x[1].decode("ASCII")))
+		outfile.write("\n// --- irx imports ---\n")
 		for x in imports:
 			outfile.write("#include <%s.h>\n" % (x[1].decode("ASCII")))
