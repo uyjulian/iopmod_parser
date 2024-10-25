@@ -135,6 +135,7 @@ if True:
 		iopmod_version[1] = int.from_bytes(main_data[moduleinfo_offset + 4:moduleinfo_offset + 5], byteorder="little")
 	imports = []
 	exports = []
+	exports_eq = {}
 	bf = io.BytesIO(main_data)
 	while True:
 		magic = bf.read(4)
@@ -201,6 +202,13 @@ if True:
 				number += 1
 			export_info.append(export_iopmod)
 			exports.append(export_info)
+	for x in exports:
+		for xx in x[2]:
+			if xx[4] not in exports_eq:
+				funcname = xx[3].decode("ASCII")
+				if len(funcname) == 0:
+					funcname = "%s_%d" % (xx[0].decode("ASCII"), xx[1])
+				exports_eq[xx[4]] = [exports.index(x), x[2].index(xx), funcname]
 	outfile = sys.stdout
 	mapformat = 0
 	if len(sys.argv) > 2:
@@ -213,18 +221,22 @@ if True:
 			outfile.write("\nmodule %s %d.%d exported functions:\n" % (x[1].decode("ASCII"), (x[0] >> 8) & 0xff, x[0] & 0xff))
 			for xx in x[2]:
 				funcname = xx[3].decode("ASCII")
-				if len(funcname) == 0:
-					outfile.write("0x%08x %d at 0x%08x\n" % (xx[2], xx[1], xx[4]))
-				else:
-					outfile.write("0x%08x %d %s() at 0x%08x\n" % (xx[2], xx[1], funcname, xx[4]))
+				if len(funcname) != 0:
+					funcname = " %s()" % funcname
+				eqinfo = ""
+				if xx[4] in exports_eq:
+					exp_eq = exports_eq[xx[4]]
+					exp = exports[exp_eq[0]][2][exp_eq[1]]
+					if xx != exp:
+						eqinfo = "=%s()" % exp_eq[2]
+				outfile.write("0x%08x %d%s%s at 0x%08x\n" % (xx[2], xx[1], funcname, eqinfo, xx[4]))
 		for x in imports:
 			outfile.write("\n%s %d.%d\n" % (x[1].decode("ASCII"), (x[0] >> 8) & 0xff, x[0] & 0xff))
 			for xx in x[2]:
 				funcname = xx[3].decode("ASCII")
-				if len(funcname) == 0:
-					outfile.write("0x%08x %d\n" % (xx[2], xx[1]))
-				else:
-					outfile.write("0x%08x %d %s()\n" % (xx[2], xx[1], funcname))
+				if len(funcname) != 0:
+					funcname = " %s()" % funcname
+				outfile.write("0x%08x %d%s\n" % (xx[2], xx[1], funcname))
 	if mapformat == 1:
 		for x in exports:
 			for xx in x[2]:
