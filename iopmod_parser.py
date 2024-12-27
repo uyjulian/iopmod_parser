@@ -321,3 +321,15 @@ if True:
 		outfile.write("\n// --- irx imports ---\n")
 		for x in imports:
 			outfile.write("#include <%s.h>\n" % (x[1].decode("ASCII")))
+	if mapformat == 4:
+		modver = "???"
+		modname = "???"
+		if iopmod_version[0] != None:
+			modver = "%d-%d" % (iopmod_version[0], iopmod_version[1])
+			modname = iopmod_name.decode("ASCII")
+		for x in imports:
+			for xx in x[2]:
+				funcname = xx[3].decode("ASCII")
+				if len(funcname) == 0:
+					funcname = "%s_%d" % (xx[0].decode("ASCII"), xx[1])
+				outfile.write("fn=%s,modver=%s,modname=%s,impver=0x%04x,impname=%s,funcord=%d,funcname=%s\n" % (sys.argv[1], modver, modname, x[0], x[1].decode("ASCII"), xx[1], funcname))
